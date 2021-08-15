@@ -1,5 +1,4 @@
 """
-
 Dev serve command on Windows
 `python -m bokeh serve --dev --show zviewer`
 """
@@ -38,14 +37,15 @@ class ZebraViewer():
                    'darkred', 'crimson', 'lightcoral']
 
     def __init__(self):
-        data_path = os.path.abspath(
-            os.path.join(app_path, 'data', '2020pnw.jsonl'))
-        self.data = zebra.path.Competitions(data_path)
-        field_path = os.path.abspath(
-            os.path.join(app_path, 'data', 'field2020.json'))
-        self.field = read_field(field_path)
-        events = pd.read_json(os.path.abspath(
-            os.path.join(app_path, 'data', '2020events.json')))
+        # data_path = os.path.abspath(
+        #     os.path.join(app_path, 'data', '2020pnw.jsonl'))
+        self.data = zebra.path.Competitions('data/2020pnw.jsonl')
+        # field_path = os.path.abspath(
+        #     os.path.join(app_path, 'data', 'field2020.json'))
+        self.field = read_field('data/field2020.json')
+        # events = pd.read_json(os.path.abspath(
+        #     os.path.join(app_path, 'data', '2020events.json')))
+        events = pd.read_json('data/2020events.json')
         self.event_data = events[events.key.isin(self.data.events)]
         self.event = self.data.events[0]
         self.level = 'qm'
