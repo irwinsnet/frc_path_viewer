@@ -3,6 +3,7 @@ Dev serve command on Windows
 `python -m bokeh serve --dev --show zviewer`
 """
 import json
+import os
 import os.path
 import re
 import sys
@@ -37,6 +38,7 @@ class ZebraViewer():
                    'darkred', 'crimson', 'lightcoral']
 
     def __init__(self):
+        print('CURRENT DIR:', os.getcwd())
         # data_path = os.path.abspath(
         #     os.path.join(app_path, 'data', '2020pnw.jsonl'))
         self.data = zebra.path.Competitions('data/2020pnw.jsonl')
