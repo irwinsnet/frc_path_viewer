@@ -1,1 +1,1 @@
-web: bokeh serve — port=$PORT — allow-websocket-origin=pviewer.herokuapp.com — address=0.0.0.0 — use-xheaders pviewer
+web: bokeh serve --port=$PORT --allow-websocket-origin=pviewer.herokuapp.com --address=0.0.0.0 --use-xheaders pviewer
