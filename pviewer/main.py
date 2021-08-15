@@ -3,6 +3,7 @@
 Dev serve command on Windows
 `python -m bokeh serve --dev --show zviewer`
 """
+import json
 import os.path
 import re
 import sys
@@ -16,7 +17,6 @@ import pandas as pd
 app_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, app_path)
 import zebra.path
-import zebra.data
 
 PLOT_HEIGHT = 500
 VIDEO_HEIGHT = 135
@@ -27,6 +27,10 @@ PLOT_X_RANGE = (-2, 60)
 X_SIZE = 25
 BASE_TBA_URL = 'https://www.thebluealliance.com/'
 BASE_YOUTUBE_URL = 'https://youtube.com'
+
+def read_field(field_file):
+    with open(field_file) as ffile:
+        return json.load(ffile)
 
 class ZebraViewer():
     positions = ['blue1', 'blue2', 'blue3', 'red1', 'red2', 'red3']
@@ -39,7 +43,7 @@ class ZebraViewer():
         self.data = zebra.path.Competitions(data_path)
         field_path = os.path.abspath(
             os.path.join(app_path, 'data', 'field2020.json'))
-        self.field = zebra.data.read_field(field_path)
+        self.field = read_field(field_path)
         events = pd.read_json(os.path.abspath(
             os.path.join(app_path, 'data', '2020events.json')))
         self.event_data = events[events.key.isin(self.data.events)]
