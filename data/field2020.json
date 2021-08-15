@@ -1,0 +1,296 @@
+{
+    "game": "Infinite Recharge",
+    "colors": {
+        "blue_tape": "lightblue",
+        "red_tape": "mistyrose",
+        "perimeter": "black",
+        "white_tape": "lightgrey",
+        "blue_alliance": "blue",
+        "red_alliance": "red"
+    },
+    "dimenstions": "feet",
+    "lines": [
+        {
+            "x": [0, 52.438],
+            "y": [0, 0],
+            "class": "perimeter",
+            "desc": "sidewall"
+        },
+        {
+            "x": [
+                52.438,
+                52.438
+            ],
+            "y": [
+                0,
+                26.938
+            ],
+            "class": "blue_alliance",
+            "desc": "blue_alliance_wall"
+        },
+        {
+            "x": [
+                0,
+                52.438
+            ],
+            "y": [
+                26.938,
+                26.938
+            ],
+            "class": "perimeter",
+            "desc": "sidewall"
+        },
+        {
+            "x": [
+                0,
+                0
+            ],
+            "y": [
+                0,
+                26.938
+            ],
+            "class": "red_alliance",
+            "desc": "red_alliance_wall"
+        },
+        {
+            "x": [
+                10,
+                10
+            ],
+            "y": [
+                0,
+                26.938
+            ],
+            "class": "white_tape",
+            "desc": "initiation_line"
+        },
+        {
+            "x": [
+                42.438,
+                42.438
+            ],
+            "y": [
+                0,
+                26.938
+            ],
+            "class": "white_tape",
+            "desc": "initiation_line"
+        },
+        {
+            "x": [
+                0,
+                2.5
+            ],
+            "y": [
+                21.049,
+                19.049
+            ],
+            "class": "blue_tape",
+            "desc": "blue_target_zone"
+        },
+        {
+            "x": [
+                2.5,
+                0
+            ],
+            "y": [
+                19.049,
+                17.049
+            ],
+            "class": "blue_tape",
+            "desc": "blue_target_zone"
+        },
+        {
+            "x": [
+                52.438,
+                49.938
+            ],
+            "y": [
+                9.888,
+                7.888
+            ],
+            "class": "red_tape",
+            "desc": "red_target_zone"
+        },
+        {
+            "x": [
+                49.938,
+                52.438
+            ],
+            "y": [
+                7.888,
+                5.888
+            ],
+            "class": "red_tape",
+            "desc": "red_target_zone"
+        },
+        {
+            "x": [
+                0,
+                2.5
+            ],
+            "y": [
+                10.388,
+                7.888
+            ],
+            "class": "red_tape",
+            "desc": "red_loading_zone"
+        },
+        {
+            "x": [
+                2.5,
+                0
+            ],
+            "y": [
+                7.888,
+                5.388
+            ],
+            "class": "red_tape",
+            "desc": "red_loading_zone"
+        },
+        {
+            "x": [
+                52.438,
+                49.938
+            ],
+            "y": [
+                21.549,
+                19.049
+            ],
+            "class": "blue_tape",
+            "desc": "blue_loading_zone"
+        },
+        {
+            "x": [
+                49.938,
+                52.438
+            ],
+            "y": [
+                19.049,
+                16.549
+            ],
+            "class": "blue_tape",
+            "desc": "blue_loading_zone"
+        },
+        {
+            "x": [
+                21.964,
+                35.885
+            ],
+            "y": [
+                4.062,
+                9.823
+            ],
+            "class": "red_tape",
+            "desc": "shieldgen_btm"
+        },
+        {
+            "x": [
+                35.885,
+                30.474
+            ],
+            "y": [
+                9.823,
+                22.875
+            ],
+            "class": "white_tape",
+            "desc": "shieldgen_blueside"
+        },
+        {
+            "x": [
+                30.474,
+                16.552
+            ],
+            "y": [
+                22.875,
+                17.115
+            ],
+            "class": "blue_tape",
+            "desc": "shieldgen_top"
+        },
+        {
+            "x": [
+                16.552,
+                21.964
+            ],
+            "y": [
+                17.115,
+                4.062
+            ],
+            "class": "white_tape",
+            "desc": "shieldgen_redside"
+        },
+        {
+            "x": [
+                17.219,
+                17.219
+            ],
+            "y": [
+                0,
+                4.625
+            ],
+            "class": "red_tape",
+            "desc": "red_trench_left"
+        },
+        {
+            "x": [
+                17.219,
+                35.219
+            ],
+            "y": [
+                4.625,
+                4.625
+            ],
+            "class": "red_tape",
+            "desc": "red_trench_top"
+        },
+        {
+            "x": [
+                35.219,
+                35.219
+            ],
+            "y": [
+                4.625,
+                0
+            ],
+            "class": "red_tape",
+            "desc": "red_trench_right"
+        },
+        {
+            "x": [
+                17.219,
+                17.219
+            ],
+            "y": [
+                26.938,
+                22.355
+            ],
+            "class": "blue_tape",
+            "desc": "blue_trench_left"
+        },
+        {
+            "x": [
+                17.219,
+                35.219
+            ],
+            "y": [
+                22.355,
+                22.355
+            ],
+            "class": "blue_tape",
+            "desc": "blue_trench_btm"
+        },
+        {
+            "x": [
+                35.219,
+                35.219
+            ],
+            "y": [
+                22.355,
+                26.938
+            ],
+            "class": "blue_tape",
+            "desc": "blue_trench_right"
+        }
+    ]
+}
