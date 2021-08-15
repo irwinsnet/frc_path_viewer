@@ -1,1 +1,1 @@
-web: bokeh serve — port=$PORT — allow-websocket-origin=frc-path-viewer.herokuapp.com — address=0.0.0.0 — use-xheaders zviewer
+web: bokeh serve — port=$PORT — allow-websocket-origin=frc-path-viewer.herokuapp.com — address=0.0.0.0 — use-xheaders frc-path-viewer
