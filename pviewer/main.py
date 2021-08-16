@@ -376,7 +376,8 @@ class ZebraViewer():
             Pacific Northwest in early 2020 (immediately before the rest of the
             season was canceled due to the pandemic).</p>
             <p>This visualization tool was built using Python and the
-            <a href="https://docs.bokeh.org/" target="_blank">Bokeh package.</a></p>
+            <a href="https://docs.bokeh.org/" target="_blank">Bokeh package.</a>
+            The code for this project is at https://github.com/irwinsnet/frc_path_viewer.</p>
             <p>The tracking system that made this possible was provided by Zebra.
             <a href="https://www.zebra.com/us/en/blog/posts/2020/enabling-first-robotics-students-to-explore-their-edge.html" target="_blank">
             This blog post</a> provides additional information.</p>
