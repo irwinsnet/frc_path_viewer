@@ -32,7 +32,6 @@ def read_field(field_file):
     with open(field_file) as ffile:
         return json.load(ffile)
 
-data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 
 class ZebraViewer():
     positions = ['blue1', 'blue2', 'blue3', 'red1', 'red2', 'red3']
@@ -42,13 +41,13 @@ class ZebraViewer():
     def __init__(self):
         # data_path = os.path.abspath(
         #     os.path.join(app_path, 'data', '2020pnw.jsonl'))
-        self.data = zebra.path.Competitions(os.path.join(data_path, '2020pnw.jsonl'))
+        self.data = zebra.path.Competitions('2020pnw.jsonl')
         # field_path = os.path.abspath(
         #     os.path.join(app_path, 'data', 'field2020.json'))
-        self.field = read_field(os.path.join(data_path, 'field2020.json'))
+        self.field = read_field('field2020.json')
         # events = pd.read_json(os.path.abspath(
         #     os.path.join(app_path, 'data', '2020events.json')))
-        events = pd.read_json(os.path.join(data_path, '2020events.json'))
+        events = pd.read_json('2020events.json')
         self.event_data = events[events.key.isin(self.data.events)]
         self.event = self.data.events[0]
         self.level = 'qm'
