@@ -18,6 +18,9 @@ app_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, app_path)
 import zebra.path
 
+print('CURRENT DIR', os.getcwd())
+print('CURRENT DIR CONTENTS', os.listdir())
+
 PLOT_HEIGHT = 500
 VIDEO_HEIGHT = 135
 VIDEO_WIDTH = 240
@@ -41,13 +44,16 @@ class ZebraViewer():
     def __init__(self):
         # data_path = os.path.abspath(
         #     os.path.join(app_path, 'data', '2020pnw.jsonl'))
-        self.data = zebra.path.Competitions('2020pnw.jsonl')
+        self.data = zebra.path.Competitions(
+            os.path.abspath(os.path.join(app_path, '2020pnw.jsonl')))
         # field_path = os.path.abspath(
         #     os.path.join(app_path, 'data', 'field2020.json'))
-        self.field = read_field('field2020.json')
+        self.field = read_field(
+            os.path.abspath(os.path.join(app_path, 'field2020.json')))
         # events = pd.read_json(os.path.abspath(
         #     os.path.join(app_path, 'data', '2020events.json')))
-        events = pd.read_json('2020events.json')
+        events = pd.read_json(
+            os.path.abspath(os.path.join(app_path, '2020events.json')))
         self.event_data = events[events.key.isin(self.data.events)]
         self.event = self.data.events[0]
         self.level = 'qm'
