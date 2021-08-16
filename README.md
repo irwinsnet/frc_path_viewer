@@ -26,3 +26,5 @@ python code to download and process the information. The code is located
 [in my zebra_motion Github repository](https://github.com/irwinsnet/zebra_motion).
 FYI, I have not yet finished, documented, or cleaned up the code in the
 *zebra_motion* repository. The code in that repository is subject to change.
+
+Stacy Irwin, 16 August 2021
