@@ -1,7 +1,43 @@
 """
-Dev serve command on Windows
-`python -m bokeh serve --dev --show zviewer`
+A Bokeh application for viewing FRC Robot path data.
+
+The data files were created from information downloaded from The Blue
+Alliance (TBA).
+
+The app depends on the zebra.path module. The zebra.path module reads
+data from disk and converts the data into appropriate data structures.
+
+Created by Stacy Irwin, 16 Aug 2021
+
+Module Contents:
+    ZebraViewer:    Class that contains the Bokeh application code.
+
+    PAGE_TITLE:     Title of HTML page containing viewer app.
+    PATH_FILE:      Name of JSONL data file. Each line is a JSON object
+                    with path and score data downloaded from TBA.
+    FIELD_FILE:     Name of JSON data file with coordinates for field
+                    markings. This data is plotted as lines in the path
+                    plot.
+    EVENTS_FILE:    Name of JSON file that contains event data downloaded
+                    from TBA.
+    INITIAL_END _TIME:      Initial setting of right slider in range
+                            select slider. In seconds.
+    INITIAL_SPAN_LENGTH:    Initial setting of span_length spinner, in
+                            seconds.
+    PLOT_HEIGHT:    Height of main plot, in pixels.
+    PLOT_X_RANGE:   Range of main plot's x-axis.
+    X_SIZE:         Size of X-glyph that represents each robot's
+                    current position.
+    PATH_COLORS:    List of CSS colors names used to draw robot paths.
+                    Order of colors is blue1 through blue3, then red1
+                    through red3.
+    STATION_NAMES:  List of names of the alliance stations.
+    VIDEO_HEIGHT:   Height of match video iframes.
+    VIDEO_WIDTH:    Width of match video iframes
+    BASE_YOUTUBE_URL:   Base URL for Youtube
+    BASE_TBA_URL:       Base URL for TBA
 """
+
 import json
 import os
 import os.path
@@ -18,42 +54,63 @@ app_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, app_path)
 import zebra.path
 
-print('CURRENT DIR', os.getcwd())
-print('CURRENT DIR CONTENTS', os.listdir())
-
-PLOT_HEIGHT = 500
-VIDEO_HEIGHT = 135
-VIDEO_WIDTH = 240
-INITIAL_START_TIME = 150
+# Module Parameters
+PAGE_TITLE = 'FRC Zebra Path Viewer'
+PATH_FILE = '2020pnw.jsonl'
+FIELD_FILE = 'field2020.json'
+EVENTS_FILE = '2020events.json'
+INITIAL_END_TIME = 150
 INITIAL_SPAN_LENGTH = 15
+PLOT_HEIGHT = 500
 PLOT_X_RANGE = (-2, 60)
 X_SIZE = 25
+PATH_COLORS = ['darkblue', 'royalblue', 'deepskyblue',
+                'darkred', 'crimson', 'lightcoral']
+STATION_NAMES = ['blue1', 'blue2', 'blue3', 'red1', 'red2', 'red3']
 BASE_TBA_URL = 'https://www.thebluealliance.com/'
+VIDEO_HEIGHT = 135
+VIDEO_WIDTH = 240
 BASE_YOUTUBE_URL = 'https://youtube.com'
-
-def read_field(field_file):
-    with open(field_file) as ffile:
-        return json.load(ffile)
 
 
 class ZebraViewer():
-    positions = ['blue1', 'blue2', 'blue3', 'red1', 'red2', 'red3']
-    path_colors = ['darkblue', 'royalblue', 'deepskyblue',
-                   'darkred', 'crimson', 'lightcoral']
+    """Contains most of the functionality of the Bokeh application.
 
+    Attributes:
+        get_level_matches(): Returns a tuple of matches for the current
+            competition level, i.e., qualification, semi-finals, etc.
+        initialize_widgets(): Creates and initializes page controls,
+            such as the mach selector, event selector, time ranges, etc.
+        update_datasource(): Updates the Bokeh `ColumnDataSource object
+            that contains the data that is plotted.
+        get_page_title(): Gets a page title containing current event data.
+        get_plot_title(): Gets a string describing the selected match.
+        update_plot_annotations(): Updates all items on page that are
+            not part of the Bokeh plot, including Youtube video
+            iframes, page title, team info hyperlinks, etc.
+        _{widget_name}_callback(): Callback functions that are
+            triggered when the user changes a widget setting.
+        register_widget_callbacks(): Links each callback function to
+            its respective widget.
+        draw_paths(): Draws the path plot using Bokeh drawing functions.
+        update_videos(): Updates the iframes containing youtube videos.
+        get_team_links(): Gets list of hyperlinks for FRC teams playing
+            in the currently selected match.
+        build_layout(): Assembles the page layout. This is the only
+            method that is called externally.
+    """
     def __init__(self):
-        # data_path = os.path.abspath(
-        #     os.path.join(app_path, 'data', '2020pnw.jsonl'))
-        self.data = zebra.path.Competitions(
-            os.path.abspath(os.path.join(app_path, '2020pnw.jsonl')))
-        # field_path = os.path.abspath(
-        #     os.path.join(app_path, 'data', 'field2020.json'))
-        self.field = read_field(
-            os.path.abspath(os.path.join(app_path, 'field2020.json')))
-        # events = pd.read_json(os.path.abspath(
-        #     os.path.join(app_path, 'data', '2020events.json')))
-        events = pd.read_json(
-            os.path.abspath(os.path.join(app_path, '2020events.json')))
+        """Initializes the ZebraViewer object. Takes no parameters."""
+        # Load data from disk
+        def _join(*args):
+            return  os.path.abspath(os.path.join(*args))
+
+        self.data = zebra.path.Competitions(_join(app_path, PATH_FILE))
+        with open(_join(app_path, FIELD_FILE)) as field_file:
+            self.field = json.load(field_file)
+
+        # Set attributes
+        events = pd.read_json(_join(app_path, EVENTS_FILE))
         self.event_data = events[events.key.isin(self.data.events)]
         self.event = self.data.events[0]
         self.level = 'qm'
@@ -62,18 +119,19 @@ class ZebraViewer():
         self.match_data = self.data[self.match]
         self.teams = self.match_data.blue + self.match_data.red
         self.start_time = 0
-        self.end_time = INITIAL_START_TIME
+        self.end_time = INITIAL_END_TIME
         self.span = INITIAL_SPAN_LENGTH
         self.figure = None
         self.title_div = None
         self.video_row = None
         self.team_div = None
 
+        # Initialize class attributes
         self.initialize_widgets()
         self.datasources = [
             {'path': models.ColumnDataSource(data={'xs': [], 'ys': []}),
              'pos': models.ColumnDataSource(data={'x': [], 'y': []}),
-             'color': self.path_colors[idx]}
+             'color': PATH_COLORS[idx]}
             for idx in range(6)]
         self.update_datasources()
         self.register_widget_callbacks()
@@ -102,6 +160,11 @@ class ZebraViewer():
         return matches
 
     def initialize_widgets(self):
+        """Initializes Bokeh Widgets used to update the plot.
+        
+        See the respective _callback functions for additional
+        information on each widget.
+        """
         self.event_selector = models.Select(
             title='Select Competition',
             options=[(evt.key, evt.name + ' | ' + evt.end_date)
@@ -144,8 +207,15 @@ class ZebraViewer():
             low=5, high=55, step=10, value=15)
         self.span_length_spinner.visible = False
         
-
     def update_datasources(self):
+        """Updates plot data when a new match is selected.
+
+        The ZebraViewer.datasources object is a list of six dictionaries.
+        The data 'path' and 'pos' keys contain Bokeh ColumnDataSource
+        objects that are linked to the plot. The plot is automatically
+        updated when the data is the ColumnDataSource objects is
+        updated.
+        """
         self.match = self.match_selector.value
         self.match_data = self.data[self.match]
         self.teams = self.match_data.blue + self.match_data.red
@@ -153,7 +223,7 @@ class ZebraViewer():
         end = self.end_time * 10
         for idx in range(6):
             self.datasources[idx]['match'] = self.match_selector.value
-            self.datasources[idx]['position'] = self.positions[idx]
+            self.datasources[idx]['position'] = STATION_NAMES[idx]
             self.datasources[idx]['team'] = self.teams[idx]
             self.datasources[idx]['path'].data = {
                 'xs': self.match_data.paths[2*idx][start:end],
@@ -165,6 +235,12 @@ class ZebraViewer():
             self.datasources[idx]['path_len'] = self.match_data.paths.shape[1]
 
     def get_page_title(self):
+        """Generates headers at the top of the HTML page.
+        
+        The headers contain information about the FRC competition.
+
+        Returns: A string containing the HTML header tags.
+        """
         evt = self.event_data[self.event_data.key == self.event].iloc[0]
         tba_url = 'https://www.thebluealliance.com/event/' + self.event
         tba_link = f'<a href="{tba_url}" target="_blank">{evt.at["name"]}</a>'
@@ -174,6 +250,10 @@ class ZebraViewer():
         return title
 
     def get_plot_title(self):
+        """Generates plot tile containing a human readable match title.
+        
+        Returns: A string containing the plot title.
+        """
         levels = {'qm': 'Qualification',
                   'qf': 'Quarterfinals',
                   'sf': 'Semifinals',
@@ -183,6 +263,12 @@ class ZebraViewer():
         return f'{levels[self.level]} Match {label}'
 
     def update_plot_annotations(self):
+        """Updates everything that is not part of the main plot.
+
+        Updates main page title, team info links, Youtube video
+        iframes, plot tile, and plot legend -- basically everything that
+        is not linked to the Bokeh ColumnDataSource object.
+        """
         self.match = self.match_selector.value
         self.match_data = self.data[self.match]
         self.teams = self.match_data.blue + self.match_data.red
@@ -203,6 +289,13 @@ class ZebraViewer():
                     index=idx)
 
     def _event_selector_callback(self, new):
+        """Changes the FRC competition that is selected.
+
+        Causes the plot to be redrawn.
+
+        Args:
+            new: The TBA event key, for example, 2020waspo.        
+        """
         self.event = new
         self.level_matches = self.get_level_matches()
         self.match_selector.options = self.level_matches
@@ -211,6 +304,15 @@ class ZebraViewer():
         self.update_datasources()
 
     def _level_selector_callback(self, new):
+        """Updates the contents of the match selector widget.
+
+        Causes the plot to be redrawn.
+
+        Args:
+            new: A string. Either 'qm' for qualification matches, 'qf'
+                 for quarterfinals matches, 'sf' for semi-finals
+                 matches, or 'f' for finals matches.
+        """
         self.level = new
         self.level_matches = self.get_level_matches()
         self.match_selector.options = self.level_matches
@@ -219,12 +321,27 @@ class ZebraViewer():
         self.update_datasources()
 
     def _match_selector_callback(self, new):
+        """Updates the plot to display a new match.
+        
+        Args:
+            new: The TBA match key that identifies the match. For
+                 example, '2020wasno_qm1' is the first qualification
+                 match for the Glacier Peak event.
+        """
         self.match = new
         self.match_data = self.data[self.match]
         self.update_plot_annotations()
         self.update_datasources()
 
     def _time_select_type_callback(self, old, new):
+        """Controls with time control widgets are visible.
+
+        Args:
+            old: A list containing the active, i.e., pushed-in,
+            selector buttons. If 0, the entire robot path for the entire
+            match is drawn. If 1, the time span controller is active.
+            If 2, the time range controller is active.
+        """
         # Ensure only one option can be selected at at time.
         if len(new) == 0:
             self.time_select_type.active = old
@@ -250,21 +367,45 @@ class ZebraViewer():
             self._time_range_selector_callback(self.time_range_selector.value)
 
     def _time_range_selector_callback(self, value):
+        """Changes the start and end times of the visible robot path.
+
+        Causes the plot to be redrawn.
+
+        Args:
+        Value: a tuple containing the positions of the left and right
+            span controls. In seconds elapsed since the beginning of the
+            match.
+        """
         self.start_time = value[0]
         self.end_time = value[1]
         self.update_datasources()
 
     def _time_span_selector_callback(self, value):
+        """Specifies the end time of the path that is plotted on screen.
+
+        The end time is in seconds elapsed since the start of the match.
+        Causes the plot to be redrawn.
+
+        Args:
+            value: The updated value of the span control, in seconds.        
+        """
         self.end_time = value
         self.start_time = max(0, value - self.span)
         self.update_datasources()
 
     def _spen_length_spinner_callback(self, value):
+        """Sets length of path displayed in plot, in seconds.
+
+        Causes the plot to be redrawn.
+        Args:
+            The new value of the spinner, in seconds.
+        """
         self.span = value
         self.start_time = max(0, self.end_time - self.span)
         self.update_datasources()
 
     def register_widget_callbacks(self):
+        """Links each callback function to its respective widget."""
         self.event_selector.on_change(
             'value',
             lambda attr, old, new: self._event_selector_callback(new))
@@ -291,6 +432,13 @@ class ZebraViewer():
         )
 
     def draw_paths(self, height=350):
+        """Draws the path plot using Bokeh drawing functions.
+        Args:
+            height: Plot height in pixels. Plot width will be twice the
+                    plot height. Default is 350.
+
+        Returns: A Bokeh Figure object.
+        """
         fig = plotting.figure(title=self.match_selector.value,
                             match_aspect=True,
                             plot_height=height, plot_width=height*2,
@@ -315,6 +463,7 @@ class ZebraViewer():
         return fig
 
     def update_videos(self):
+        """Updates the iframes containing youtube videos."""
         def _create_video_frame(key, height, width):
             frame_text = (
             f'<iframe width="width" height="height" id="key"'
@@ -328,6 +477,7 @@ class ZebraViewer():
         self.video_row.children = video_divs
 
     def get_team_links(self):
+        """Gets list of hyperlinks for teams playing in current match."""
         urls = [f'{BASE_TBA_URL}/team/{team[3:]}' for team in self.teams]
         links = [f'<a href="{tm[0]}" target="_blank">{tm[1]}</a>'
                  for tm in zip(urls, self.teams)]
@@ -336,8 +486,19 @@ class ZebraViewer():
         tm_list = tm_title + '<ul>' + ''.join(list_items) + '</ul>'
         return tm_list
 
-
     def build_layout(self, height):
+        """Builds the layout for the HTML page.
+
+        This is the only method that is called externally.
+
+        Args:
+            height: The plot height. The plot width will be set from the
+            plot height, with a 1:2 height to width ratio.
+
+        Returns:
+            a Bokeh column layout object, which will be added to the HTML
+            page's document root.
+        """
         # Top Row
         self.title_div = models.Div(text=f'{self.get_page_title()}')
 
@@ -399,4 +560,4 @@ class ZebraViewer():
 
 zview = ZebraViewer()
 io.curdoc().add_root(zview.build_layout(PLOT_HEIGHT))
-io.curdoc().title = 'FRC Zebra Path Viewer'
+io.curdoc().title = PAGE_TITLE

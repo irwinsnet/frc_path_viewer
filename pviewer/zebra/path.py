@@ -1,6 +1,13 @@
-"""Tools for analyzing Zebra motion capture data from FRC Competitions.
+"""Classes that represent FRC robot path and match data.
+
+Module Contents:
+    Match: A class that contains all data for a single FRC match.
+    Competitions: A composite class that contains multile Match objects
+    for one or more competitions.
+
+Stacy Irwin, 16 Aug 2021.
 """
-import argparse
+
 import json
 import pickle
 
@@ -10,6 +17,42 @@ import pandas as pd
 
 class Match():
     """Zebra path data and detailed scores for a single FRC match.
+
+    Attributes:
+        event: The TBA event key that identifies the competition, such
+               as '2020wasno'.
+        match: The TBA match key that ientifies the match, such as
+               '2020wasno_1sf1'.
+        blue: A list containing the three blue alliance team keys, i.e.,
+             ['frc1318', 'frc2976', 'frc4131'].
+        red: A list containing the three red alliance team keys.
+        paths:  * A numpy array with shape (12, path_length). The tracking
+                system records 10 positions per second and matches are
+                150 seconds long, so the path_length is a bit longer
+                than 1500, typically 1503 or 1504, etc.
+                * Up to six different robots compete in an FRC match.
+                The path data is stored as a Numpy array with 12 rows,
+                two rows (x and y coordinates) for each robot in the
+                match. If a robot did participate or tracking data is
+                missing, the corresponding row will be filled with
+                Numpy nan values.
+        times: A Numpy array of length path_length, containing the
+               elapsed time in seconds since the commencement of robot
+               tracking.
+        score:  A JSON object containing detailed score data for the
+                match, exactly as downloaded from TBA.
+        teams: A dictionary object to simplify data access. The keys
+              are the six TBA team keys, with the values also being
+              dictionaries, structured as so:
+              ```
+              {'xs': Numpy array containing x coordinates,
+               'ys': Numpy array containing y coordinates,
+               'station': Alliance station name.,
+               'start': robot starting position,
+               'end': robot ending position,
+               'n': Number of non-missing positions in Numpy array,
+               'missing': Number of missing positions in Numpy array}
+              ```
 
     Constructor Args:
         match_text: A single line of JSON text from the data file
@@ -50,6 +93,7 @@ class Match():
 
     @staticmethod
     def _scan_path(xs, ys):
+        """Scans path for start and end positions and missing coordinates."""
         if all([x is None for x in xs]) and all([y is None for y in ys]):
             return {'start': None, 'end': None, 'n': 0, 'missing': None}
         
@@ -140,31 +184,7 @@ class Competitions():
         self.zmatches = [Match(path) for path in self.paths
                         if path['zebra'] is not None]
 
-    def write_file(self, file_path):
-        with open(file_path, 'wb') as pfile:
-            pickle.dump(self, pfile)
-
-
     def matches(self, event):
+        """Gets list of matches as TBA match keys for a specific event."""
         return [zmatch.match for zmatch in self.zmatches
                 if zmatch.event == event]
-
-
-def setup_parser():
-    """setup module for command line use."""
-    desc = (
-        'Converts an FRC data JSONL file that was downloaded by '
-        'zebra/data.py to a zebra.paths.Competitions object and '
-        'saves it in a pickle file.'
-    )
-    parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('INPUT_FILE', help='JSONL formated FRC data file.')
-    parser.add_argument('OUTPUT_FILE', help='Ouput pickle file.')
-    return parser
-
-
-if __name__ == '__main__':
-    parser = setup_parser()
-    args = parser.parse_args()
-    zcomp = Competitions(args.INPUT_FILE)
-    zcomp.write_file(args.OUTPUT_FILE)
