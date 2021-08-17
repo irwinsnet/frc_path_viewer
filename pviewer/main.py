@@ -11,31 +11,6 @@ Created by Stacy Irwin, 16 Aug 2021
 
 Module Contents:
     ZebraViewer:    Class that contains the Bokeh application code.
-
-    PAGE_TITLE:     Title of HTML page containing viewer app.
-    PATH_FILE:      Name of JSONL data file. Each line is a JSON object
-                    with path and score data downloaded from TBA.
-    FIELD_FILE:     Name of JSON data file with coordinates for field
-                    markings. This data is plotted as lines in the path
-                    plot.
-    EVENTS_FILE:    Name of JSON file that contains event data downloaded
-                    from TBA.
-    INITIAL_END _TIME:      Initial setting of right slider in range
-                            select slider. In seconds.
-    INITIAL_SPAN_LENGTH:    Initial setting of span_length spinner, in
-                            seconds.
-    PLOT_HEIGHT:    Height of main plot, in pixels.
-    PLOT_X_RANGE:   Range of main plot's x-axis.
-    X_SIZE:         Size of X-glyph that represents each robot's
-                    current position.
-    PATH_COLORS:    List of CSS colors names used to draw robot paths.
-                    Order of colors is blue1 through blue3, then red1
-                    through red3.
-    STATION_NAMES:  List of names of the alliance stations.
-    VIDEO_HEIGHT:   Height of match video iframes.
-    VIDEO_WIDTH:    Width of match video iframes
-    BASE_YOUTUBE_URL:   Base URL for Youtube
-    BASE_TBA_URL:       Base URL for TBA
 """
 
 import json
@@ -54,22 +29,40 @@ app_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, app_path)
 import zebra.path
 
-# Module Parameters
+### Module Parameters
+# Title of HTML page containing viewer app.
 PAGE_TITLE = 'FRC Zebra Path Viewer'
+# Name of JSONL data file. Each line is a JSON object, with path and score data
+#   downloaded from TBA.
 PATH_FILE = '2020pnw.jsonl'
+# Name of JSON data file with coordinates for field
+#   markings. This data is plotted as lines in the path plot.
 FIELD_FILE = 'field2020.json'
+# Name of JSON file that contains event data downloaded from TBA.
 EVENTS_FILE = '2020events.json'
+# Initial setting of right slider in range select slider. In seconds.
 INITIAL_END_TIME = 150
+# Initial setting of span_length spinner, in seconds.
 INITIAL_SPAN_LENGTH = 15
+# Height of main plot, in pixels.
 PLOT_HEIGHT = 500
+# Range of main plot's x-axis.
 PLOT_X_RANGE = (-2, 60)
+# Size of X-glyph that represents each robot's current position.
 X_SIZE = 25
+# List of CSS colors names used to draw robot paths. Order of colors is
+#   blue1 through blue3, then red1 through red3.
 PATH_COLORS = ['darkblue', 'royalblue', 'deepskyblue',
                 'darkred', 'crimson', 'lightcoral']
+# List of names of the alliance stations. 
 STATION_NAMES = ['blue1', 'blue2', 'blue3', 'red1', 'red2', 'red3']
+# Height of match video iframes.
 BASE_TBA_URL = 'https://www.thebluealliance.com/'
+# Width of match video iframes
 VIDEO_HEIGHT = 135
+# Base URL for Youtube
 VIDEO_WIDTH = 240
+# Base URL for TBA
 BASE_YOUTUBE_URL = 'https://youtube.com'
 
 
@@ -538,7 +531,9 @@ class ZebraViewer():
             season was canceled due to the pandemic).</p>
             <p>This visualization tool was built using Python and the
             <a href="https://docs.bokeh.org/" target="_blank">Bokeh package.</a>
-            The code for this project is at https://github.com/irwinsnet/frc_path_viewer.</p>
+            The code for this project is
+            <a href="https://github.com/irwinsnet/frc_path_viewer" target = "_blank">
+            available on Github</a>.</p>
             <p>The tracking system that made this possible was provided by Zebra.
             <a href="https://www.zebra.com/us/en/blog/posts/2020/enabling-first-robotics-students-to-explore-their-edge.html" target="_blank">
             This blog post</a> provides additional information.</p>
